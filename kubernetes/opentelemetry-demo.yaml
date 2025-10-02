@@ -5,6 +5,9 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  labels:
+    istio-discovery: enabled
+    istio-injection: enabled
   name: otel-demo
 ---
 # Source: opentelemetry-demo/charts/opensearch/templates/poddisruptionbudget.yaml

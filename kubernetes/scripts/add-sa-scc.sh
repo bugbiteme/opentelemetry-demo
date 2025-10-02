@@ -1,4 +1,4 @@
-oc adm policy add-scc-to-user anyuid -z otel-sa -n otel-demo
+# oc adm policy add-scc-to-user anyuid -z otel-sa -n otel-demo
 # Get all deployment names and set the service account on each one
 for deploy in $(oc get deployment -n otel-demo -o jsonpath='{.items[*].metadata.name}'); do
     oc set serviceaccount deployment/$deploy otel-sa -n otel-demo

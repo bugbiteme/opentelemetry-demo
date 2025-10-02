@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  # The name of the RoleBinding should be unique. It's common to name it after the SCC you're using.
+  name: otel-sa-anyuid-binding
+  namespace: otel-demo
+roleRef:
+  # This is the reference to the ClusterRole that grants the 'use' verb for the 'anyuid' SCC.
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:anyuid 
+subjects:
+- kind: ServiceAccount
+  name: otel-sa
+  namespace: otel-demo
