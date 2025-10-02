@@ -1,0 +1,36 @@
+# kustomization.yaml
+
+# 1. List the single YAML file containing multiple resources
+resources:
+- opentelemetry-demo.yaml
+- sa.yaml
+- crb.yaml
+- route.yaml
+
+# 2. Define the patch and target all Deployment objects
+patches:
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: dummy-name # This name is ignored when using a Kind target
+    spec:
+      template:
+        spec:
+          # This line is added to the pod spec of ALL Deployments
+          serviceAccountName: otel-sa 
+  # This target selector applies the patch to EVERY object with 'Kind: Deployment'
+  target:
+    kind: Deployment
+- patch: |-
+    apiVersion: apps/v1
+    kind: StatefulSet
+    metadata:
+      name: dummy-name # This name is ignored when using a Kind target
+    spec:
+      template:
+        spec:
+          # This line is added to the pod spec of ALL Deployments
+          serviceAccountName: otel-sa 
+  target:
+    kind: StatefulSet
