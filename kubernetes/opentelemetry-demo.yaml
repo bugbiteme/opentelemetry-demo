@@ -11334,6 +11334,8 @@ spec:
       opentelemetry.io/name: accounting
   template:
     metadata:
+      annotations:
+        traffic.sidecar.istio.io/excludeOutboundPorts: "9092"
       labels:
         
         opentelemetry.io/name: accounting
@@ -11371,7 +11373,7 @@ spec:
           - sh
           - -c
           - until nc -z -v -w30 kafka 9092; do echo waiting for kafka; sleep 2; done;
-          image: busybox:latest
+          image: quay.io/llevy/busybox:latest
           name: wait-for-kafka
       volumes:
 ---
@@ -11463,6 +11465,8 @@ spec:
       opentelemetry.io/name: cart
   template:
     metadata:
+      annotations:
+        traffic.sidecar.istio.io/excludeOutboundPorts: "6379"
       labels:
         
         opentelemetry.io/name: cart
@@ -11513,7 +11517,7 @@ spec:
           - -c
           - until nc -z -v -w30 valkey-cart 6379; do echo waiting for valkey-cart; sleep 2;
             done;
-          image: busybox:latest
+          image: quay.io/llevy/busybox:latest
           name: wait-for-valkey-cart
       volumes:
 ---
@@ -11529,7 +11533,7 @@ metadata:
     app.kubernetes.io/component: checkout
     app.kubernetes.io/name: checkout
     app.kubernetes.io/version: "2.0.2"
-    app.kubernetes.io/part-of: opentelemetry-demo
+    app.kubernetes.io/part-of: opentelemetry-demo 
 spec:
   replicas: 1
   revisionHistoryLimit: 10
@@ -11539,6 +11543,8 @@ spec:
       opentelemetry.io/name: checkout
   template:
     metadata:
+      annotations:
+        traffic.sidecar.istio.io/excludeOutboundPorts: "9092"
       labels:
         
         opentelemetry.io/name: checkout
@@ -11549,7 +11555,7 @@ spec:
       serviceAccountName: opentelemetry-demo
       containers:
         - name: checkout
-          image: 'ghcr.io/open-telemetry/demo:2.0.2-checkout'
+          image: 'quay.io/llevy/demo:2.0.2-checkout'
           imagePullPolicy: IfNotPresent
           ports:
             
@@ -11598,8 +11604,13 @@ spec:
           - sh
           - -c
           - until nc -z -v -w30 kafka 9092; do echo waiting for kafka; sleep 2; done;
-          image: busybox:latest
+          image: quay.io/llevy/busybox:latest
           name: wait-for-kafka
+                    # START: Add this block to the Init Container spec
+          securityContext:
+            # Istio proxy runs as 1337 and is excluded from its own traffic capture rules
+            runAsUser: 1337 
+          # END: Add this block
       volumes:
 ---
 # Source: opentelemetry-demo/templates/component.yaml
@@ -11758,7 +11769,7 @@ spec:
       serviceAccountName: opentelemetry-demo
       containers:
         - name: flagd
-          image: 'ghcr.io/open-feature/flagd:v0.11.1'
+          image: 'quay.io/llevy/flagd:v0.11.1'
           imagePullPolicy: IfNotPresent
           command:
             - /flagd-build
@@ -11831,7 +11842,7 @@ spec:
           - sh
           - -c
           - cp /config-ro/demo.flagd.json /config-rw/demo.flagd.json && cat /config-rw/demo.flagd.json
-          image: busybox
+          image: quay.io/llevy/busybox:latest
           name: init-config
           volumeMounts:
           - mountPath: /config-ro
@@ -11867,6 +11878,9 @@ spec:
       opentelemetry.io/name: fraud-detection
   template:
     metadata:
+      annotations:
+        # Annotation is here (correct for pod template metadata)
+        traffic.sidecar.istio.io/excludeOutboundPorts: "9092"
       labels:
         
         opentelemetry.io/name: fraud-detection
@@ -11908,7 +11922,7 @@ spec:
           - sh
           - -c
           - until nc -z -v -w30 kafka 9092; do echo waiting for kafka; sleep 2; done;
-          image: busybox:latest
+          image: quay.io/llevy/busybox:latest
           name: wait-for-kafka
       volumes:
 ---
@@ -12768,7 +12782,7 @@ spec:
       enableServiceLinks: true
       initContainers:
       - name: configfile
-        image: "opensearchproject/opensearch:2.19.0"
+        image: "quay.io/llevy/opensearch:2.19.0"
         imagePullPolicy: "IfNotPresent"
         command:
         - sh
@@ -12793,7 +12807,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 1000
 
-        image: "opensearchproject/opensearch:2.19.0"
+        image: "quay.io/llevy/opensearch:2.19.0"
         imagePullPolicy: "IfNotPresent"
         readinessProbe:
           failureThreshold: 3
