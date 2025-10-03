@@ -12104,7 +12104,7 @@ spec:
               value: service.name=$(OTEL_SERVICE_NAME),service.namespace=opentelemetry-demo,service.version=2.0.2
           resources:
             limits:
-              memory: 65Mi
+              memory: 256Mi
           securityContext:
             runAsGroup: 101
             runAsNonRoot: true
@@ -12299,7 +12299,7 @@ spec:
             - name: LOCUST_SPAWN_RATE
               value: "1"
             - name: LOCUST_HOST
-              value: http://frontend-proxy:8080
+              value: http://frontend-proxy.otel-demo.svc.cluster.local:8080
             - name: LOCUST_HEADLESS
               value: "false"
             - name: LOCUST_AUTOSTART
